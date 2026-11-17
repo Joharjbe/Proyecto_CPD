@@ -189,10 +189,25 @@ for fac in FAC_OK:
     r = R[R.fac == fac].sort_values("p")
     R.loc[r.index[1:], "dTdp"] = np.diff(r["T"].values) / np.diff(r.p.values)
 
+# Cuanto alargan la corrida las barreras del modo B: mediana de T_ej del B frente a la del A en la misma
+# configuracion, la suma T_comp + T_comm (fases del B) frente a T_ej (del A) y el desbalance en cada modo
+modos = []
+for version in ("3", "3b"):
+    for fac in FACS:
+        n_tr, n_te = TAM[fac]
+        for p in P:
+            A, B = med(version, n_tr, n_te, p, "A"), med(version, n_tr, n_te, p, "B")
+            if A is None or B is None:
+                continue
+            modos.append(dict(version=version, fac=fac, p=p, T_A=A.T_ej, T_B=B.T_ej, B_sobre_A=B.T_ej / A.T_ej - 1,
+                              comp_mas_comm_sobre_T=(B.T_comp + B.T_comm) / A.T_ej - 1,
+                              desb_A=A.T_comp_max / A.T_comp_prom, desb_B=B.T_comp_max / B.T_comp_prom))
+MODOS = pd.DataFrame(modos)
+
 # ---------------------------------------------------------------------------
 # 2. Normalizacion: constantes de cada termino del modelo teorico
-#    T_p = c1*n_te*n_tr/p + c2*n_te*k*p + log2(p)(a1 + n_te*b1) + (log2(p)*a2 + n_tr*b2) + (log2(p)*a3 + p*n_te*k*b3)
-#    scatter y gather en arbol, como en MPI: O(a log p + b m) (U2.4 y correo del profesor del 6-nov)
+#    T_p = n_te*(n_tr/p)*(cd + cs*log2(n_tr/p)) + c2*n_te*k*p + log2(p)(a1 + n_te*b1) + (log2(p)*a2 + n_tr*b2) + (log2(p)*a3 + p*n_te*k*b3)
+#    scatter y gather en arbol (U2.4, diap. 8/41): a log p + b m(1 - 1/p) = O(a log p + b m); el correo del profesor del 6-nov indica que MPI usa O(log p)
 # ---------------------------------------------------------------------------
 R["pares_q"] = R.n_te * np.ceil(R.n_tr / R.p)
 R["n_q"] = np.ceil(R.n_tr / R.p)
@@ -231,6 +246,10 @@ a1, b1 = ajuste(np.column_stack([np.log2(m.p), np.log2(m.p) * m.n_te]), m.T_bcas
 a2, b2 = ajuste(np.column_stack([np.log2(m.p), m.n_tr]), m.T_scatter, "scatter")
 a3, b3 = ajuste(np.column_stack([np.log2(m.p), m.p * m.n_te * k]), m.T_gather, "gather")
 CONST = dict(cd=cd, cs=cs, c1=c1, c2=c2, a1=a1, b1=b1, a2=a2, b2=b2, a3=a3, b3=b3)
+# S y E de la serie fuerte sin el ahorro del ordenamiento: cada proceso ordena listas de n_tr/p y T_s, de n_tr
+R["F_orden"] = (cd + cs * np.log2(R.n_tr)) / (cd + cs * np.log2(R.n_tr / R.p))
+R["S_sin_orden"] = R.S / R.F_orden
+R["E_sin_orden"] = R.E / R.F_orden
 
 
 def T_teo(n_tr, n_te, p, parte="total"):
@@ -294,6 +313,11 @@ ESC = pd.DataFrame(esc, columns=["ley", "p", "n_tr", "n_te", "Ts", "T", "T_lo", 
 ESC["T_teo"] = [float(T_teo(f.n_tr, f.n_te, f.p)) for _, f in ESC.iterrows()]
 ESC["Ew_teo"] = np.nan
 ESC["Ew"] = np.nan
+# E sin el ahorro del ordenamiento: cada proceso ordena listas de n_tr/p y T_s, de n_tr (cd y cs del ajuste);
+# E_sin_orden_teo es la del modelo, con el trabajo contado al mismo costo por par que paga cada proceso
+ESC["F_orden"] = (cd + cs * np.log2(ESC.n_tr)) / (cd + cs * np.log2(ESC.n_tr / ESC.p))
+ESC["E_sin_orden"] = ESC.E / ESC.F_orden
+ESC["E_sin_orden_teo"] = ESC.n_te * ESC.n_tr * (cd + cs * np.log2(ESC.n_tr / ESC.p)) / (ESC.p * ESC.T_teo)
 e = ESC[ESC.ley == "debil_n"]
 if len(e) and (e.p == 1).any():
     # eficiencia debil E_w = T(1)/T(p) (trabajo por proceso constante), con T(1) = n0 con p = 1
@@ -734,6 +758,7 @@ res = dict(estadistico="mediana de las repeticiones; barras: rango intercuartil 
                      if ((R.p == p) & (R.fac >= 1)).any()},
            popt=POPT.to_dict(orient="records"),
            fuerte=R.drop(columns=["pares_q"]).to_dict(orient="records"),
+           modos=MODOS.to_dict(orient="records"),
            reduccion=R3b.to_dict(orient="records"),
            escalabilidad=ESC.to_dict(orient="records"),
            control=CTL.to_dict(orient="records"),

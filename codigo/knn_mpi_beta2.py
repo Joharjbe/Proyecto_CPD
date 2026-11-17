@@ -14,7 +14,7 @@ Version beta 2 (cambios respecto a la beta 1):
       intercalados, que se descartan, y una corrida medida por modo (W por
       tiempo, ver knn_mpi_beta3.py).
       Modo A: sin barreras (tiempo de ejecucion T_ej).
-      Modo B: con comm.Barrier() antes de cada marca (desglose por fase).
+      Modo B: con tres comm.Barrier() (tras bcast, scatter y computo local; desglose por fase).
       El orden de los modos alterna con la repeticion (A,B si r es par; B,A si es impar).
 
 Ejecucion:

@@ -24,7 +24,8 @@ Version beta 3 (version final; cambios respecto a la beta 2):
       distancia +inf y no ganan nunca.
     - Protocolo de medicion (el mismo en las tres betas): cada ejecucion mide UNA
       repeticion (--rep r). Modo A: sin barreras dentro de la region medida (de ahi sale
-      T_ej). Modo B: con comm.Barrier() antes de cada marca, solo para separar las fases.
+      T_ej). Modo B: con tres comm.Barrier() (tras bcast, scatter y computo local), solo para
+      separar las fases.
       Primero hay W rondas de calentamiento que se descartan; en cada ronda se corre una
       vez cada modo, asi los dos llegan igual de "calientes" a la medicion (las primeras
       corridas de un proceso son mas lentas: hasta 2 veces en n/4 con p = 8). Despues va

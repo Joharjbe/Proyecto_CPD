@@ -132,8 +132,10 @@ sus corridas en paralelo: antes en las repeticiones pares y después en las impa
   W = ⌈0,25 s / d⌉, entre 1 y 30; W = 0 si n_tr·n_te > 2·10⁸, porque una corrida ya tarda varios
   segundos (`--calentamientos` lo fija a mano).
 - **Modos.** En el modo A no hay barreras dentro de la región medida; de ahí sale T_ej (y S, E y
-  FLOP/s). En el modo B hay un `comm.Barrier()` antes de cada marca, solo para separar las fases;
-  de ahí salen T_bcast, T_scatter, T_comp, T_gather y T_comp2. El orden alterna con la repetición:
+  FLOP/s). En el modo B hay tres `comm.Barrier()` (después del bcast, del scatter y del cómputo
+  local), solo para separar las fases: de ahí salen T_bcast, T_scatter, T_comp, T_gather y T_comp2.
+  Como la U3.2 indica quitar las barreras después de depurar, ningún tiempo total sale del modo B;
+  cuánto alargan la corrida queda en `resumen.json` (bloque `modos`). El orden alterna con la repetición:
   A, B si la repetición es par y B, A si es impar (también en el calentamiento). El modo S es la
   versión secuencial (T_s), con la misma regla de calentamiento.
 - **Orden.** Las repeticiones van afuera: primero la repetición 0 de toda la malla, después la 1,
@@ -253,7 +255,9 @@ Las columnas `ley` y `fac` de la versión anterior ya no están: las series se r
 - `tablas/*.tex`: las de antes (`T2_betas`, `T3_tamanos`, `T4_*`, `T6_popt`, `T_escalabilidad`) y
   `T_pingpong`.
 - `resumen.json`: constantes del modelo, p óptimo, series (fuerte, 3b, débil, iso, control y
-  betas), precisión, α y β del ping-pong, carga externa, columna `cpu` y avisos.
+  betas), precisión, α y β del ping-pong, carga externa, columna `cpu` y avisos. En la serie fuerte y
+  en la de escalabilidad, `F_orden`, `S_sin_orden`, `E_sin_orden` y `E_sin_orden_teo` quitan el ahorro
+  del ordenamiento; el bloque `modos` compara el modo B con el A.
 
 Si falta una serie, `analisis.py` lo avisa y genera igual las figuras y las tablas, con huecos.
 También avisa si hay filas repetidas (se queda con la última), si el CSV es del protocolo viejo, si
@@ -277,5 +281,6 @@ mediana pasa de 1,5 núcleos.
   `correr_experimentos.py`, en una sola sesión de 33 min (ver `resultados/entorno.txt`), y las figuras
   y tablas salen de `python analisis.py`. Las mediciones de septiembre usaban otro protocolo
   (5 repeticiones seguidas en un mismo `mpirun`, con media ± desviación) y ya no se usan.
-- El modelo normalizado usa latencia `log2(p)` para scatter y gather, como las colectivas en árbol
-  de MPI: O(α log p + βm) (U2.4 y correo del profesor del 6 de noviembre de 2026).
+- El modelo normalizado usa latencia `log2(p)` para scatter y gather, como la comunicación en árbol
+  de la U2.4 (diap. 8/41): α log p + βm(1 − 1/p) = O(α log p + βm). El profesor indicó por correo
+  (6 de noviembre de 2026) que MPI usa O(log p).

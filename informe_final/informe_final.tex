@@ -71,7 +71,7 @@ El trabajo más costoso es calcular las $\ntr\cdot\nte = 517\,320$ distancias, q
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.46\textwidth]{dag_knn.png}
-\caption{DAG del KNN en paralelo. En azul, los costos de comunicación; en rojo, el costo de cómputo de cada proceso. Los costos de scatter y gather corresponden a una topología lineal; MPI usa árboles (Sección~\ref{sec:dag}). Fuente: enunciado del proyecto [1].}
+\caption{DAG del KNN en paralelo. En azul, los costos de comunicación; en rojo, el de cómputo de cada proceso. Scatter y gather van en topología lineal (U2.4, diap.~7/41~[5]); según el profesor, MPI usa $O(\log p)$ [10], el costo en árbol (U2.4, diap.~8/41; Sección~\ref{sec:dag}). Fuente: enunciado del proyecto [1].}
 \label{fig:dag}
 \end{figure}
 
@@ -202,7 +202,7 @@ Gather$(C_q, C, root = 0)$ \tcp*[r]{paso 5}
 }
 \end{algorithm}
 
-Usamos el modelo de comunicación del curso [5], con $a \equiv \alpha$ (latencia) y $b \equiv \beta$ (tiempo por dato) como en el DAG. El DAG del enunciado usa una topología lineal, en la que el scatter y el gather de $m$ datos cuestan $O(a\,p + b\,m)$: pagan $p$ veces la latencia, y es una aproximación no optimizada. MPI organiza las colectivas en árbol. Así, el broadcast cuesta $O(\log p\,(a + m\,b))$, y el scatter y el gather $O(a\log p + b\,m)$: la latencia se paga en $\log p$ niveles, pero el maestro igual envía o recibe los $m$ datos [5]. Así nos lo aclaró el profesor [10], y con esos costos, escritos con un solo $n$, queda la Tabla~\ref{tab:pasos}. En el DAG el gather cuesta $O(p(a + k\,b))$, que es el costo para un punto de prueba; nosotros hacemos un solo Gather con los candidatos de los $\nte$ puntos (para no repetir la latencia $\nte$ veces), así que el maestro recibe $m = p\,\nte\,k$ pares. $T_{comp_2}$ no aparece en el DAG, pero es el trabajo de su último nodo (votación), que hace el maestro.
+Usamos el modelo de comunicación del curso, $T_{comm} = f(p)(\alpha + x\beta)$, en el que $f(p)$ depende de la topología (U2.4, diap.~4/41 [5]), con $a \equiv \alpha$ (latencia) y $b \equiv \beta$ (tiempo por dato) como en el DAG. En el scatter y el gather (su broadcast ya va con $\log p$), el DAG del enunciado usa una topología lineal, en la que $m$ datos cuestan $(p-1)(a + b\,m/p) = O(a\,p + b\,m)$ y pagan $p$ veces la latencia (U2.4, diap.~7/41). El profesor nos aclaró que esa es una aproximación no optimizada, que MPI usa $O(\log p)$ y que la expresión correcta está en la U2.4 [10]. Usamos la de la comunicación en árbol (U2.4, diap.~8/41): el broadcast cuesta $O(\log p\,(a + m\,b))$, y el scatter y el gather $\sum_{i=0}^{\log p-1}(a + b\,2^i m/p) = a\log p + b\,m(1-1/p) = O(a\log p + b\,m)$: la latencia se paga en $\log p$ niveles, pero el mensaje del nivel $i$ lleva $2^i m/p$ datos, así que el maestro igual envía o recibe sus $m$ datos una sola vez. Con esos costos, escritos con un solo $n$, queda la Tabla~\ref{tab:pasos}. En el DAG el gather cuesta $O(p(a + k\,b))$, que es el costo para un punto de prueba; nosotros hacemos un solo Gather con los candidatos de los $\nte$ puntos (para no repetir la latencia $\nte$ veces), así que el maestro recibe $m = p\,\nte\,k$ pares. $T_{comp_2}$ no aparece en el DAG, pero es el trabajo de su último nodo (votación), que hace el maestro.
 
 \begin{table}[!htb]
 \centering
@@ -319,7 +319,11 @@ $16n$ & 22\,992 & 5\,760 & 132\,433\,920 & $2{,}54\cdot 10^{10}$ & 0,9807 & 9754
 \label{fig:precision}
 \end{figure}
 
-\textbf{Medición.} Medimos con \texttt{MPI.Wtime()} en el maestro, desde antes del broadcast hasta después de calcular la precisión (la carga y la división de los datos quedan fuera, como en el código base). Cada \texttt{mpirun} mide una sola repetición de una configuración, y el script recorre toda la malla repetición por repetición (en las impares, en orden inverso). Así las repeticiones de una misma configuración quedan separadas en el tiempo, y una racha de carga no afecta siempre a la misma. Hicimos 4 repeticiones (2 en el tamaño mayor de isoeficiencia, cuya versión secuencial tarda 3 min) y reportamos la mediana; las barras de las figuras van de la repetición más rápida a la más lenta. Antes de medir, cada \texttt{mpirun} corre rondas de calentamiento que se descartan hasta juntar unos 0,25 s (entre 1 y 30 rondas; ninguna en los tamaños de más de $2\cdot 10^8$ pares). Las configuraciones que se repiten en varias series (por ejemplo, $n_0$ con $p = 1$) se miden una sola vez, así que todas las series comparten la misma línea base. Hicimos dos modos: en el modo A no hay barreras dentro de la región medida y de ahí sale $T_{ej}$ (con el que calculamos $S$, $E$ y FLOP/s); en el modo B ponemos \texttt{comm.Barrier()} antes de cada marca solo para separar las fases, porque sin barreras el gather incluiría la espera del proceso más lento. Los dos modos se miden en el mismo \texttt{mpirun}, en orden alternado. Definimos $T_{comm} = T_{bcast} + T_{scatter} + T_{gather}$ y $T_{comp} = T_{comp_1} + T_{comp_2}$, con $T_{comp_1}$ el del proceso más lento. Como $T_s$ usamos la versión secuencial del mismo cálculo de la beta 3, medida de la misma forma. No es el mejor algoritmo secuencial [8]: con selección de los $k$ menores (\texttt{np.argpartition}) sería más rápido y $S$ sería menor (Secciones~\ref{sec:speedup} y \ref{sec:mejoras}); la usamos para que $S$ compare el mismo cálculo repartido entre $p$ procesos.
+\textbf{Medición.} Medimos con \texttt{MPI.Wtime()} en el maestro, desde antes del broadcast hasta después de calcular la precisión (la carga y la división de los datos quedan fuera, como en el código base). Cada \texttt{mpirun} mide una sola repetición de una configuración, y el script recorre toda la malla repetición por repetición (en las impares, en orden inverso). Así las repeticiones de una misma configuración quedan separadas en el tiempo, y una racha de carga no afecta siempre a la misma. Hicimos 4 repeticiones (2 en el tamaño mayor de isoeficiencia, cuya versión secuencial tarda 3 min) y reportamos la mediana; las barras de las figuras van de la repetición más rápida a la más lenta. Antes de medir, cada \texttt{mpirun} corre rondas de calentamiento que se descartan hasta juntar unos 0,25 s (entre 1 y 30 rondas; ninguna en los tamaños de más de $2\cdot 10^8$ pares). Las configuraciones que se repiten en varias series (por ejemplo, $n_0$ con $p = 1$) se miden una sola vez, así que todas las series comparten la misma línea base. 
+
+\textbf{Modos A y B.} El material del curso indica que \texttt{MPI\_Barrier} normalmente no se necesita, porque la sincronización es automática, y que es ``Util para debugging, pero debe ser removida luego'' (U3.2, diap.~4/18~[5]). Por eso en el modo A, del que sale $T_{ej}$ (y con él $S$, $E$, FLOP/s y la escalabilidad), no hay barreras dentro de la región medida: la única va antes de empezar a medir, para que todos los procesos partan juntos. El modo B agrega tres \texttt{comm.Barrier()}, después del broadcast, del scatter y del cómputo local, solo para separar las fases, porque sin barreras el gather incluiría la espera del proceso más lento; de él salen $T_{comm}$, $T_{comp}$, el desbalance y las constantes del modelo (Sección~\ref{sec:norma}). Con barreras, cada fase dura lo que tarda el proceso más lento más la barrera, como un \textit{superstep} del modelo BSP (U2.2, diap.~24/34~[5]), y la corrida se alarga: con $p = 8$, la mediana de $T_{ej}$ del modo B es 17\,\% mayor que la del modo A en $n/4$ y 14\,\% mayor en $n_0$, mientras que en $4n$ y $16n$ los dos modos difieren en a lo más 2,2\,\%, en los dos sentidos. En $n/4$ el aumento se repite con $p = 6$ y en la beta 3b; en $n_0$ es menor que la dispersión entre repeticiones, y en la 3b, con las mismas barreras, es de $-0{,}1$\,\%. Por eso ningún tiempo total sale del modo B, y con $n_0$ y $p \ge 6$ la suma $T_{comp} + T_{comm}$ supera a $T_{ej}$ en 5--7\,\% (Tabla~\ref{tab:res}). Los dos modos se miden en el mismo \texttt{mpirun}, en orden alternado.
+
+\textbf{Métricas.} Definimos $T_{comm} = T_{bcast} + T_{scatter} + T_{gather}$ y $T_{comp} = T_{comp_1} + T_{comp_2}$, con $T_{comp_1}$ el del proceso más lento. Como $T_s$ usamos la versión secuencial del mismo cálculo de la beta 3, medida de la misma forma. No es el mejor algoritmo secuencial [8]: con selección de los $k$ menores (\texttt{np.argpartition}) sería más rápido y $S$ sería menor (Secciones~\ref{sec:speedup} y \ref{sec:mejoras}); la usamos para que $S$ compare el mismo cálculo repartido entre $p$ procesos.
 
 \subsection{FLOP de la región paralelizable}
 
@@ -340,7 +344,7 @@ La Figura~\ref{fig:tiempos} muestra $T_{ej}$, $T_{comp}$ y $T_{comm}$ para los c
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.92\textwidth]{figuras/F1_tiempos.pdf}
-\caption{Tiempos de ejecución, cómputo y comunicación medidos (marcadores: mediana; barras: mínimo y máximo) y modelo teórico normalizado (líneas), para cada tamaño. Fuente: elaboración propia.}
+\caption{Tiempos de ejecución, cómputo y comunicación medidos (marcadores: mediana; barras: mínimo y máximo) y modelo teórico normalizado (líneas), para cada tamaño. $T_{ej}$ es del modo A; $T_{comp}$, $T_{comm}$ y las constantes del modelo, del modo B. Fuente: elaboración propia.}
 \label{fig:tiempos}
 \end{figure}
 
@@ -367,11 +371,11 @@ $p$ & $T_{ej}$ (ms) & $T_{comp}$ (ms) & $T_{comm}$ (ms) & $G$ & $S$ & $E$ & $\De
 8 & 1055,70 $\pm$ 34,53 & 1024,92 & 9,99 & 102,6 & 9,24 & 1,16 & -150,04 & 24,09 & 1,02 \\
 \bottomrule
 \end{tabular}
-\caption{Resultados por $p$: mediana de 4 repeticiones; $\pm$ es la mitad del rango entre la más rápida y la más lenta. $\Delta T/\Delta p$ en ms por proceso; desbalance = máximo entre promedio de $T_{comp_1,q}$.}
+\caption{Resultados por $p$: mediana de 4 repeticiones; $\pm$ es la mitad del rango entre la más rápida y la más lenta. $T_{ej}$, $S$, $E$, $\Delta T/\Delta p$ y GFLOP/s salen del modo A (sin barreras); $T_{comp}$, $T_{comm}$, $G$ y el desbalance, del modo B (con barreras); por eso en $n_0$ con $p \ge 6$ la suma $T_{comp} + T_{comm}$ supera a $T_{ej}$. $\Delta T/\Delta p$ en ms por proceso; desbalance = máximo entre promedio de $T_{comp_1,q}$.}
 \label{tab:res}
 \end{table}
 
-La Figura~\ref{fig:colectivas} separa las tres colectivas. El scatter es la más cara porque el maestro envía todo el entrenamiento ($\ntr\, b$, casi constante en $p$); el broadcast crece como $\log p$, y el gather crece con $p$ porque el maestro recibe $p\,\nte\,k$ candidatos. Las latencias se ajustan con $\log p$, como en MPI (Sección~\ref{sec:dag}). Todos estos tiempos son del orden de $10^{-4}$ a $10^{-2}$ s, así que tienen más ruido relativo que el cómputo.
+La Figura~\ref{fig:colectivas} separa las tres colectivas. El scatter es la más cara porque el maestro envía todo el entrenamiento ($\ntr\, b$, casi constante en $p$); el broadcast crece como $\log p$, y el gather crece con $p$ porque el maestro recibe $p\,\nte\,k$ candidatos. Las latencias se ajustan con $\log p$ y los datos de scatter y gather sin $\log p$, como en el árbol de la U2.4 (diap.~8/41; Sección~\ref{sec:dag}). Todos estos tiempos son del orden de $10^{-4}$ a $10^{-2}$ s, así que tienen más ruido relativo que el cómputo.
 
 \begin{figure}[!htb]
 \centering
@@ -394,7 +398,7 @@ Con los datos originales, pasar del bucle de Python (beta 1) a NumPy (beta 2) re
 \subsection{Normalización de la expresión teórica}
 \label{sec:norma}
 
-Para comparar la expresión $O(\cdot)$ con los tiempos medidos, multiplicamos cada término por una constante física, de la misma forma que $T_{CPU} = n_{instr}\cdot CPI\cdot t_{cycle}$ y $T(m) = \alpha + m\beta$ [8]:
+Para comparar la expresión $O(\cdot)$ con los tiempos medidos, multiplicamos cada término por una constante física, de la misma forma que $T_{CPU} = n_{instr}\cdot CPI\cdot t_{cycle}$ y $T(m) = \alpha + m\beta$ [8], que es el modelo $f(p)(\alpha + x\beta)$ para un solo mensaje (U2.4, diap.~4/41 [5]). En el scatter y el gather usamos la forma de árbol de la Tabla~\ref{tab:pasos}, sin el factor $1-1/p$ de la diap.~8/41:
 \begin{align*}
 T_p^{teo}(n,p) = {}& \underbrace{\nte\frac{\ntr}{p}\Big(c_d + c_s\log_2\frac{\ntr}{p}\Big)}_{T_{comp_1}} + \underbrace{c_2\,\nte\,k\,p}_{T_{comp_2}} + \underbrace{\log_2 p\,(a_1 + \nte b_1)}_{\text{bcast}}\\
 &+ \underbrace{a_2\log_2 p + \ntr b_2}_{\text{scatter}} + \underbrace{a_3\log_2 p + p\,\nte k\, b_3}_{\text{gather}}
@@ -487,7 +491,7 @@ $16n$ & 22\,992 & 5\,760 & 61,8 & 84,9 & 8 \\
 \subsection{Speedup y FLOP/s}
 \label{sec:speedup}
 
-La Figura~\ref{fig:speedup} muestra el \textit{speedup}, calculado con los tiempos $T_{ej}$ de la Sección~\ref{sec:tiempos}. Para $n/4$ el \textit{speedup} llega a 3,1 con $p = 6$ y luego baja, por el \textit{overhead}. Para $n_0$ llega a 7,2 con $p = 8$ y supera la recta $S = p$ con $p = 2$ a 6; para $4n$ y $16n$ la supera con todo $p \ge 2$ ($S = 9{,}2$ con $p = 8$ en $16n$). Un \textit{speedup} superlineal es raro [8]; aquí lo explica el término de ordenamiento: cada proceso ordena listas de $\ntr/p$ elementos, así que su costo por par baja con $\log_2(\ntr/p)$, mientras que $T_s$ ordena listas de $\ntr$. El modelo normalizado predice este efecto ($T^{teo}(1)/T^{teo}(8) = 9{,}8$ para $16n$). Si $T_s$ fuera un algoritmo secuencial que no ordena todo (por ejemplo, con selección de los $k$ menores), el \textit{speedup} ya no sería superlineal.
+La Figura~\ref{fig:speedup} muestra el \textit{speedup}, calculado con los tiempos $T_{ej}$ de la Sección~\ref{sec:tiempos}. Para $n/4$ el \textit{speedup} llega a 3,1 con $p = 6$ y luego baja, por el \textit{overhead}. Para $n_0$ llega a 7,2 con $p = 8$ y supera la recta $S = p$ con $p = 2$ a 6; para $4n$ y $16n$ la supera con todo $p \ge 2$ ($S = 9{,}2$ con $p = 8$ en $16n$). Un \textit{speedup} superlineal es raro [8]; aquí lo explica el término de ordenamiento: cada proceso ordena listas de $\ntr/p$ elementos, así que su costo por par baja con $\log_2(\ntr/p)$, mientras que $T_s$ ordena listas de $\ntr$. El modelo normalizado predice este efecto ($T^{teo}(1)/T^{teo}(8) = 9{,}8$ para $16n$). Sin ese ahorro (el factor de la Sección~\ref{sec:esc}), el \textit{speedup} de $16n$ con $p = 8$ sería 7,4 ($E = 0{,}93$). Si $T_s$ fuera un algoritmo secuencial que no ordena todo (por ejemplo, con selección de los $k$ menores), el \textit{speedup} ya no sería superlineal.
 
 \begin{figure}[!htb]
 \centering
@@ -533,9 +537,9 @@ $b\,n\,p\log p$ & datos del broadcast & $n = \Theta(p\log p)$ \\
 
 Hicimos tres experimentos (Figuras~\ref{fig:eficiencia} y \ref{fig:escalabilidad}, Tabla~\ref{tab:esc}). El primero mira la escalabilidad fuerte, que es el punto de vista de Amdahl ($n$ fijo), y los otros dos hacen crecer el problema con $p$, que es el punto de vista de Gustafson [5]:
 \begin{itemize}[nosep]
-  \item \textbf{E. Fuerte ($n$ constante):} con $n$ fijo el denominador de $E$ crece como $k\,p^2 + p\log p + p$, así que el algoritmo \textbf{no es escalable} con $n$ fijo. Se ve claramente en $n/4$ ($E = 0{,}31$ con $p = 8$) y en $n_0$ ($E$ baja de 1,17 a 0,90 entre $p = 6$ y $p = 8$). Para $4n$ y $16n$, $E$ se mantiene sobre 1 en $2 \le p \le 8$ (solo baja un poco entre $p = 6$ y $8$) porque $T_0/W$ es muy pequeño.
-  \item \textbf{E. Débil (Gustafson, $n \propto \sqrt{p}$):} si $n$ crece como $\sqrt{p}$, el trabajo por proceso queda constante ($W/p = 0{,}16\,n^2/p \approx 517\,320$ pares en los cuatro puntos). La eficiencia débil $E_w = T(1)/T(p)$ da 1,06 y 1,08 con $p = 2$ y $4$, y baja a 0,83 con $p = 8$. Eso es lo que predice la teoría: con $n \propto \sqrt{p}$ el \textit{overhead} relativo $k\,p^2/n$ crece como $p^{1{,}5}$, así que esta ley no mantiene $E$ constante. Con $p \le 4$ la caída todavía no se ve porque las listas que ordena cada proceso se acortan ($\ntr/p$ baja de 1437 a 719 y $\log_2(\ntr/p)$ de 10,5 a 9,5). Con $p = 8$ se suma el hardware compartido: en las 4 repeticiones de ese punto, algún proceso perdió entre 8 y 18\,\% de su tiempo de CPU frente a otros programas (Sección~\ref{sec:dif}).
-  \item \textbf{Isoeficiencia ($n \propto k\,p^2$):} de $n_0 = 1797$ a 115\,008 imágenes, o sea 2\,119 millones de pares con $p = 8$. La eficiencia se mantiene casi plana ($E = 0{,}99$, 1,11, 1,13 y 1,13 para $p = 1, 2, 4, 8$), que es justo lo que predice la condición $n = \Theta(k\,p^2)$. Con $p \le 8$ esto es consistente con la teoría pero no la prueba: el \textit{overhead} todavía es mucho menor que el cómputo, y el $E$ un poco mayor que 1 viene del ordenamiento (Sección~\ref{sec:dif}).
+  \item \textbf{E. Fuerte ($n$ constante):} con $n$ fijo el denominador de $E$ crece como $k\,p^2 + p\log p + p$, así que el algoritmo \textbf{no es escalable} con $n$ fijo. Se ve claramente en $n/4$ ($E = 0{,}31$ con $p = 8$) y en $n_0$ ($E$ baja de 1,17 a 0,90 entre $p = 6$ y $p = 8$). Para $4n$ y $16n$, $E$ se mantiene sobre 1 en $2 \le p \le 8$ (solo baja un poco entre $p = 6$ y $8$): $T_0/W$ es muy pequeño y el ahorro del ordenamiento (Sección~\ref{sec:speedup}) la lleva por encima de 1.
+  \item \textbf{E. Débil (Gustafson, $n \propto \sqrt{p}$):} si $n$ crece como $\sqrt{p}$, el trabajo por proceso queda constante ($W/p = 0{,}16\,n^2/p \approx 517\,320$ pares en los cuatro puntos). La eficiencia débil $E_w = T(1)/T(p)$ da 1,06 y 1,08 con $p = 2$ y $4$, y baja a 0,83 con $p = 8$. Con $n \propto \sqrt{p}$ el \textit{overhead} relativo $k\,p^2/n$ crece como $p^{1{,}5}$, así que a la larga esta ley no mantiene $E$ constante; pero con $p \le 8$ ese término es pequeño: el modelo normalizado da $E_w = 1{,}03$, 1,06 y 1,06. Con $p \le 4$, $E_w > 1$ porque las listas que ordena cada proceso se acortan ($\ntr/p$ baja de 1437 a 719 y $\log_2(\ntr/p)$ de 10,5 a 9,5). La caída con $p = 8$ viene sobre todo del hardware compartido: en las 4 repeticiones de ese punto, algún proceso perdió entre 8 y 18\,\% de su tiempo de CPU frente a otros programas (Sección~\ref{sec:dif}).
+  \item \textbf{Isoeficiencia ($n \propto k\,p^2$):} de $n_0 = 1797$ a 115\,008 imágenes, o sea 2\,119 millones de pares con $p = 8$. La eficiencia se mantiene casi plana ($E = 0{,}99$, 1,11, 1,13 y 1,13 para $p = 1, 2, 4, 8$), que es justo lo que predice la condición $n = \Theta(k\,p^2)$. Que $E$ pase de 1 viene sobre todo del ordenamiento: cada proceso ordena listas $p$ veces más cortas que las de $T_s$, y con las constantes de la Tabla~\ref{tab:const} eso abarata cada par en un factor $(c_d + c_s\log_2\ntr)/(c_d + c_s\log_2(\ntr/p))$: 1,08, 1,15 y 1,21 para $p = 2$, 4 y 8. Sin ese ahorro, $E$ queda en 1,03, 0,98 y 0,93, y en la serie débil, en 0,97, 0,96 y 0,68; con el mismo descuento, el modelo normalizado da 0,99 a 1,00 en la isoeficiencia y 0,98, 0,96 y 0,91 en la débil. Hasta $p = 4$ el modelo coincide con lo medido; con $p = 8$ lo medido queda por debajo por el hardware compartido (Sección~\ref{sec:dif}). Con $p \le 8$ esto es consistente con la teoría pero no la prueba: el \textit{overhead} todavía es mucho menor que el cómputo.
 \end{itemize}
 
 \begin{figure}[!htb]
@@ -581,14 +585,14 @@ iso ($n \propto p^2$) & 8 & 115\,008 & 91\,968 & 20633,2 & 185718,4 & 1,13 & -- 
   \item \textbf{Hardware compartido:} en una prueba aparte (\texttt{pruebas\_extra.py}) corrimos 8 copias independientes del mismo cálculo y cada una tardó 29,8 ms en promedio (31,4 ms la más lenta) frente a 26,6 ms sola (1,12 veces más; 1,02 con 4 copias). El mismo efecto se ve en la serie de control con $\nte$ fijo y $\ntr \propto p$ (así $\ntr/p = 1437$ no cambia y el ordenamiento cuesta lo mismo): el cómputo local sube de 26,2 a 32,4 ms con $p = 8$, un 24\,\% más. Con $p = 8$ los 8 núcleos de rendimiento están ocupados, así que cualquier otro programa le quita CPU a algún proceso o lo hace correr en un núcleo de eficiencia; además, los procesos comparten memoria y frecuencia. Eso explica la caída de $E_w$ con $p = 8$ en la serie débil, y que el modelo, que no incluye nada de esto, subestime el tiempo con $p = 8$ en $4n$ (52,8 frente a 62,1 ms) y en la isoeficiencia (17,6 frente a 20,6 s).
   \item \textbf{Serialización:} las colectivas en minúscula usan \textit{pickle}. En el ping-pong, la latencia con objetos es 10 veces la de los búferes (5,3 frente a 0,5 $\mu$s) y el costo por dato 4,6 veces (2,0 frente a 0,43 ns).
   \item \textbf{Parte secuencial en el maestro:} la mezcla de los $p\cdot k$ candidatos crece con $p$ y para $n/4$ ya es comparable al cómputo.
-  \item \textbf{Desbalance:} como $\ntr$ puede no ser múltiplo de $p$ (por ejemplo, 1437), los bloques difieren en una fila; el desbalance medido es de 0--9\,\%, salvo $n_0$ con $p = 8$ (22\,\%) y $n/4$ con $p = 6$ y $8$ (26 y 84\,\%), donde el cómputo por proceso dura menos de 3,5 ms y cualquier interrupción del sistema pesa más.
+  \item \textbf{Desbalance:} como $\ntr$ puede no ser múltiplo de $p$ (por ejemplo, 1437), los bloques difieren en una fila; el desbalance medido (modo B) es de 0--9\,\%, salvo $n_0$ con $p = 8$ (22\,\%; 16\,\% en el modo~A) y $n/4$ con $p = 6$ y $8$ (26 y 84\,\%; 14 y 54\,\% en el modo~A), donde el cómputo por proceso dura menos de 3,5 ms y cualquier interrupción del sistema pesa más.
 \end{itemize}
 
 \subsection{Mejoras}
 \label{sec:mejoras}
 
 \begin{itemize}[nosep]
-  \item \textbf{Seleccionar en vez de ordenar:} usar \texttt{np.argpartition} para los $k$ menores ($O(\ntr/p)$ en lugar de $O(\ntr/p\,\log(\ntr/p))$). Como el ordenamiento domina, esto bajaría $T_{comp_1}$ y quitaría el \textit{speedup} superlineal.
+  \item \textbf{Seleccionar en vez de ordenar:} usar \texttt{np.argpartition} para los $k$ menores ($O(\ntr/p)$ en lugar de $O(\ntr/p\,\log(\ntr/p))$). Como el ordenamiento domina, esto bajaría $T_{comp_1}$ y quitaría el \textit{speedup} superlineal. Con el mismo desempate por distancia e índice global no cambiaría ninguna predicción; al acortarse el cómputo de cada proceso, la comunicación y el hardware compartido pesarían más, así que $S$ y $E$ bajarían aunque el tiempo total fuera menor.
   \item \textbf{Reducción en árbol en vez de gather (beta 3b, implementada):} mezclamos los candidatos de dos en dos con \texttt{comm.reduce} y un operador que deja los $k$ menores. En teoría, el término $n\,k\,p$ pasa a $n\,k\log p$ y la condición de isoeficiencia baja de $n = \Theta(k\,p^2)$ a $n = \Theta(k\,p\log p)$ [5], [8]. Con $p = 8$, el tiempo de los pasos 5 a 7 baja un 33\,\% en $16n$ (de 6,9 a 4,6 ms), pero ahí esos pasos son menos del 1\,\% de $T_{ej}$; en $n_0$ y $4n$ casi no cambia (2\,\%). El tiempo total cambia a lo más un 4\,\% en $n_0$, $4n$ y $16n$, del orden del ruido; en $n/4$, donde una corrida dura alrededor de 1 ms, la 3b es hasta 9\,\% más lenta (Figura~\ref{fig:reduccion}). Como anticipó el profesor, el ahorro es pequeño [10]: con $p \le 8$ el gather todavía no es un cuello de botella.
   \item \textbf{Colectivas con búfer:} \texttt{Bcast}, \texttt{Scatterv} y \texttt{Gatherv} sobre arreglos de NumPy evitan \textit{pickle}: en el ping-pong, la latencia baja de 5,3 a 0,5 $\mu$s y el costo por dato de 2,0 a 0,43 ns.
   \item \textbf{Evitar el scatter:} si cada proceso lee su propio bloque de entrenamiento, se elimina el término $b\,\ntr$, como en el algoritmo optimizado de la PD02 (Algorithm 6), que evita el scatter y el gather [6].
@@ -598,7 +602,7 @@ iso ($n \propto p^2$) & 8 & 115\,008 & 91\,968 & 20633,2 & 185718,4 & 1,13 & -- 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.92\textwidth]{figuras/F11_gather_vs_reduccion.pdf}
-\caption{Beta 3 (gather) frente a beta 3b (reducción en árbol) con $n_0$ y $16n$: tiempo de ejecución y tiempo de los pasos 5 a 7. Fuente: elaboración propia.}
+\caption{Beta 3 (gather) frente a beta 3b (reducción en árbol) con $n_0$ y $16n$: tiempo de ejecución (modo A) y tiempo de los pasos 5 a 7 (modo B). Fuente: elaboración propia.}
 \label{fig:reduccion}
 \end{figure}
 
@@ -609,7 +613,7 @@ El KNN en paralelo con bcast, scatter y gather mantiene exactamente las predicci
 %====================================================================
 \section{Bibliografía}
 
-\begin{enumerate}[label={[\arabic*]}, leftmargin=*, itemsep=3pt]
+\begin{enumerate}[label={[\arabic*]}, leftmargin=*, itemsep=2pt, parsep=0pt, topsep=2pt]
   \item J. Fiestas, \textit{Computación Paralela y Distribuida: Proyecto -- Laboratorio}, 2026-II. Lima, Perú: UTEC, 2026.\\
   \textbf{Impacto:} define el caso 5, el DAG (Figura~\ref{fig:dag}) y lo que debe tener el informe final.
 
@@ -622,8 +626,8 @@ El KNN en paralelo con bcast, scatter y gather mantiene exactamente las predicci
   \item F. Pedregosa \textit{et al.}, ``Scikit-learn: Machine Learning in Python,'' \textit{Journal of Machine Learning Research}, vol. 12, pp. 2825--2830, 2011.\\
   \textbf{Impacto:} librería de los datos (\texttt{load\_digits}) y del \textit{split} del código base.
 
-  \item J. Fiestas, diapositivas y apuntes del curso CS4052 (2026-II): U1.2 Foster y Flynn, U1.3 DAG, U2.1 Performance, U2.2 y U2.3 PRAM, U2.4 Particionamiento. Lima, Perú: UTEC, 2026.\\
-  \textbf{Impacto:} base teórica del PRAM, de $S$ y $E$, del modelo $T_{comm} = f(p)(\alpha + x\beta)$, de la granularidad $G = T_{comp}/T_{comm}$ y de la mejora con reducción en árbol.
+  \item J. Fiestas, diapositivas y apuntes del curso CS4052 (2026-II): U1.2 Foster y Flynn, U1.3 DAG, U2.1 Performance, U2.2 y U2.3 PRAM, U2.4 Particionamiento y U3.2 Paralelismo distribuido~--~MPI (\mbox{2026-I}). Lima, Perú: UTEC, 2026.\\
+  \textbf{Impacto:} base teórica del PRAM y del BSP, de $S$ y $E$, del modelo $T_{comm} = f(p)(\alpha + x\beta)$ (U2.4, diap.~4/41), de los costos de broadcast, scatter y gather en topología lineal y en árbol (U2.4, diap.~7/41 y 8/41; Tabla~\ref{tab:pasos}), de la granularidad $G = T_{comp}/T_{comm}$ y de la mejora con reducción en árbol; indicación de quitar \texttt{MPI\_Barrier} después de depurar, por la que $T_{ej}$ sale del modo A (Sección~\ref{sec:experimental}).
 
   \item J. Fiestas, \textit{CS4052 -- Prácticas Dirigidas 01 y 02 (soluciones)}. Lima, Perú: UTEC, 2026.\\
   \textbf{Impacto:} modelo del pseudocódigo distribuido, de la forma $E = O(1/(1 + \dots))$ y de la mejora sin scatter.
@@ -631,7 +635,7 @@ El KNN en paralelo con bcast, scatter y gather mantiene exactamente las predicci
   \item J. Fiestas, diapositivas del curso CS4052: U4.5 Paralelismo híbrido. Lima, Perú: UTEC, 2026.\\
   \textbf{Impacto:} usar un proceso MPI por núcleo físico y plantear el paralelismo híbrido como mejora.
 
-  \item J. Fiestas, diapositivas del curso CS4052: U6.1 Performance--Broadcast y U6.2 Performance y escalabilidad, y código \texttt{knn.cpp} de la PD04 (material del semestre 2026-I). Lima, Perú: UTEC, 2026.\\
+  \item J. Fiestas, diapositivas del curso CS4052: U6.1 Performance--Broadcast y U6.2 Performance y escalabilidad (2026-II); ejemplos resueltos de $p_{opt}$ de la U6.2 y código \texttt{knn.cpp} de la PD04 (\mbox{2026-I}). Lima, Perú: UTEC, 2026.\\
   \textbf{Impacto:} modelo $T(m) = \alpha + m\beta$ de las colectivas y reducción en árbol; conteo de FLOP y FLOP/s; versión secuencial considerada para $T_s$ y \textit{speedup} superlineal; función de \textit{overhead} $T_0$, isoeficiencia y regla del máximo; cálculo de $p_{opt}$ con $T'(p) = 0$; datos sintéticos para escalar el problema.
 
   \item Anthropic, \textit{Claude Opus 5} y \textit{Claude Opus 5.5} (asistentes de inteligencia artificial, usados con Claude Code), setiembre a noviembre de 2026.\\
@@ -639,7 +643,7 @@ El KNN en paralelo con bcast, scatter y gather mantiene exactamente las predicci
   \textbf{Impacto y validación:} la mayor parte del código y del texto se hizo con esta herramienta. Validamos el código comparando las predicciones con las del código base del profesor para $p = 1$ a $8$ (Sección~\ref{sec:validacion}) y revisamos las fórmulas y el análisis con el material del curso [5]--[8]. Las cifras del análisis salen de los datos y scripts del .zip adjunto. El grupo es responsable del contenido presentado.
 
   \item J. Fiestas, respuesta por correo electrónico a una consulta del grupo sobre el costo de \texttt{scatter} y \texttt{gather} y el acceso al clúster Khipu, 6 de noviembre de 2026 (comunicación personal).\\
-  \textbf{Impacto:} aclara que $O(p)$ es la aproximación no optimizada y que MPI usa $O(\log p)$, con la expresión de la U2.4 (Tabla~\ref{tab:pasos}); acepta la reducción en árbol como mejora (Sección~\ref{sec:mejoras}); y justifica medir en una computadora personal porque Khipu no estaba disponible (Sección~\ref{sec:experimental}).
+  \textbf{Impacto:} aclara que $O(p)$ es la aproximación no optimizada, que MPI usa $O(\log p)$ y que la expresión correcta está en la U2.4 (adjunta la diap.~7/41, lineal; la de árbol de la Tabla~\ref{tab:pasos} es la 8/41); acepta la reducción en árbol como mejora (Sección~\ref{sec:mejoras}); y justifica medir en una computadora personal porque Khipu no estaba disponible (Sección~\ref{sec:experimental}).
 \end{enumerate}
 
 \end{document}
