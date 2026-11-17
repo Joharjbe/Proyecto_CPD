@@ -173,7 +173,7 @@ es decir, el algoritmo es casi perfectamente paralelo: el span es logarítmico y
 \subsection{Algoritmo distribuido (el del DAG)}
 \label{sec:dag}
 
-El Algoritmo~\ref{alg:knn} es la versión con $p$ procesos que sigue el DAG del enunciado, y es la aglomeración descrita en la Sección~\ref{sec:foster}. Las líneas 1, 2 y 9 son \texttt{comm.bcast}, \texttt{comm.scatter} y \texttt{comm.gather}.
+El Algoritmo~\ref{alg:knn} es la versión con $p$ procesos que sigue el DAG del enunciado, y es la aglomeración descrita en la Sección~\ref{sec:foster}. Las líneas 1, 2 y 8 son \texttt{comm.bcast}, \texttt{comm.scatter} y \texttt{comm.gather}. El \textit{pardo} va en el bucle sobre $\ntr$ (línea 4), que es lo que reparte el Scatter, como en el Algorithm 5 de la PD02 [6]: cada proceso lo ejecuta sobre su bloque $X_q$ y aporta $k$ candidatos por punto de prueba. En la beta 3b, \texttt{comm.reduce} hace en árbol los pasos 5 y 6, y el maestro solo vota (Sección~\ref{sec:mejoras}).
 
 \begin{algorithm}[!htb]
 \caption{KNN distribuido con Broadcast/Scatter/Gather$(X_{tr}, y_{tr}, X_{te}, y_{te}, k, p)$}
@@ -182,14 +182,12 @@ El Algoritmo~\ref{alg:knn} es la versión con $p$ procesos que sigue el DAG del 
 \KwSalida{etiquetas predichas $\hat{y}[1,\dots,\nte]$ y precisión (\textit{accuracy}) en el proceso 0}
 Broadcast$(X_{te}, k, root = 0)$ \tcp*[r]{paso 1}
 Scatter$((X_{tr}, y_{tr}), (X_q, y_q), root = 0)$ \tcp*[r]{paso 2}
-\ParaPar{$q \leftarrow 0$ \KwTo $p-1$}{
-  \For{$i = 1$ \KwTo $\nte$}{
-    \For{$j = 1$ \KwTo $\ntr/p$}{
-      $D[j] \leftarrow \sqrt{\sum_{l=1}^{d}\left(X_{te}[i,l]-X_q[j,l]\right)^2}$ \tcp*[r]{paso 3}
-    }
-    $I \leftarrow$ índices de los $k$ menores valores de $D$ (ordenar $D$) \tcp*[r]{paso 4}
-    $C_q[i] \leftarrow \{(D[j], y_q[j]) : j \in I\}$\;
+\For{$i = 1$ \KwTo $\nte$}{
+  \ParaPar{$j = 1$ \KwTo $\ntr$}{
+    $D[j] \leftarrow \sqrt{\sum_{l=1}^{d}\left(X_{te}[i,l]-X_{tr}[j,l]\right)^2}$ \tcp*[r]{paso 3}
   }
+  $I \leftarrow$ los $k$ índices $j$ del bloque $X_q$ con menor $D[j]$ (ordenar) \tcp*[r]{paso 4}
+  $C_q[i] \leftarrow \{(D[j], y_{tr}[j]) : j \in I\}$\;
 }
 Gather$(C_q, C, root = 0)$ \tcp*[r]{paso 5}
 \If{$q = 0$}{
@@ -214,9 +212,9 @@ Usamos el modelo de comunicación del curso, $T_{comm} = f(p)(\alpha + x\beta)$,
 \midrule
 1 & 1 & Broadcast de los $0{,}2n$ datos de prueba & $T_{comm_1} = O(\log(p)(a + n\, b))$ \\
 2 & 2 & Scatter de $0{,}8n/p$ datos a cada proceso & $T_{comm_2} = O(a\log p + n\, b)$ \\
-3 y 4 & 3--8 & $0{,}16\,n^2/p$ distancias y ordenamiento & $T_{comp_1} = O\big(\frac{n^2}{p}(d + \log \frac{n}{p})\big) \approx O\big(\frac{n^2}{p}\big)$ \\
-5 & 9 & Gather de $k$ candidatos por punto de prueba & $T_{comm_3} = O(a\log p + n\, k\, p\, b)$ \\
-6 y 7 & 10--15 & Selección de $k$ entre $p \cdot k$, votación y precisión & $T_{comp_2} = O(n\, p\, k)$ \\
+3 y 4 & 3--7 & $0{,}16\,n^2/p$ distancias y ordenamiento & $T_{comp_1} = O\big(\frac{n^2}{p}(d + \log \frac{n}{p})\big) \approx O\big(\frac{n^2}{p}\big)$ \\
+5 & 8 & Gather de $k$ candidatos por punto de prueba & $T_{comm_3} = O(a\log p + n\, k\, p\, b)$ \\
+6 y 7 & 9--14 & Selección de $k$ entre $p \cdot k$, votación y precisión & $T_{comp_2} = O(n\, p\, k)$ \\
 \bottomrule
 \end{tabular}
 \caption{Costo de cada paso del Algoritmo~\ref{alg:knn}, con $\ntr = 0{,}8n$ y $\nte = 0{,}2n$. La aproximación de $T_{comp_1}$ vale mientras $\log_2(n/p) < d$.}
@@ -235,7 +233,7 @@ En el último paso quitamos los términos menores: $p/n \le k\,p^2/n$ y $p\log p
 
 El Listado~\ref{lst:codigo} muestra la parte central de la versión final. Las colectivas van en minúscula (objetos de Python), con \texttt{root=0}. Como $\ntr$ no es múltiplo de $p$, el maestro reparte con \texttt{np.array\_split}, que deja bloques que difieren en a lo más una fila. Cada candidato lleva su índice global para desempatar distancias iguales en el paso 6.
 
-\begin{lstlisting}[caption={Parte central de \texttt{knn\_mpi\_beta3.py} simplificada: sin las barreras ni las marcas de tiempo intermedias de la medición (los pasos corresponden al Algoritmo~\ref{alg:knn}).}, label={lst:codigo}]
+\begin{lstlisting}[float=!htb, caption={Parte central de \texttt{knn\_mpi\_beta3.py} simplificada: sin las barreras ni las marcas de tiempo intermedias de la medición (los pasos corresponden al Algoritmo~\ref{alg:knn}).}, label={lst:codigo}]
 t0 = MPI.Wtime()
 X_te, k_l = comm.bcast((X_test, k), root=0)          # 1. Broadcast de la data de prueba
 if rank == 0:                                        # 2. Scatter de la data de entrenamiento

@@ -4,18 +4,5 @@
   <p data-build-in="rise 1" style="position:absolute; left:128px; top:480px; width:1100px; font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600; color:#FF9C7E">¿Preguntas?</p>
   <p data-build-in="fade 2" style="position:absolute; left:128px; top:640px; width:1100px; font-size:28px; font-weight:600; color:#F5F3EE">Johar Barzola · Leonardo Huaman · Luis Izaguirre</p>
   <p data-build-in="fade 2" style="position:absolute; left:128px; top:692px; width:1100px; font-size:24px; color:#C9D3E1">Grupo 7 · CS4052 Computación Paralela y Distribuida · 2026-II</p>
-  <aside>[Luis · 10 s] Eso es todo. Muchas gracias; quedamos atentos a sus preguntas.
-
-Preguntas probables:
-1) ¿Cómo midieron? MPI.Wtime en el maestro; un mpirun por repetición, 4 repeticiones intercaladas en el tiempo y la mediana (2 y sin calentamiento en el tamaño de 115 008 imágenes), con unos 0,25 s de calentamiento antes de medir. Modo A sin barreras para el tiempo total y modo B con barreras solo para separar fases.
-2) ¿Qué T_s usaron? La beta 3 en un proceso sin comunicación. No es el mejor secuencial posible (seleccionar sin ordenar sería más rápido); lo usamos para comparar el mismo cálculo.
-3) ¿Por qué el speedup es superlineal? Cada proceso ordena listas de n_tr/p; el costo por par baja con log2(n_tr/p). El modelo normalizado también lo predice. Con un secuencial que solo selecciona, no sería superlineal.
-4) ¿Cómo normalizaron? Una constante física por término, ajustada con la fase medida correspondiente (mínimos cuadrados con error relativo). a_1 salió negativo y lo fijamos en 0. c_d y c_s calzan con la prueba aparte: 3,8 frente a 5,2 ns y 4,6 frente a 4,4 ns.
-5) ¿Cómo sale p óptimo? T'(p) = 0: p ≈ raíz de A/B, que crece con la raíz de n_tr; con el mínimo numérico del modelo, cerca de 18 para n = 1797.
-6) ¿Por qué el span se lee del pseudocódigo? Porque las dos reducciones están escritas como árbol explícito (for h = 1 hasta log n, con un pardo adentro), como en la suma de n números del curso: los pardo cuentan un paso y el for de afuera multiplica.
-7) ¿Por qué O(log p) en scatter y gather, si el DAG dice O(p)? El DAG usa topología lineal (U2.4, diap. 7/41): (p − 1)(a + b·m/p) = O(a·p + b·m). El profesor nos dijo por correo que MPI usa O(log p) y nos remitió a la U2.4. En árbol (diap. 8/41), el mensaje del nivel i lleva 2^i·m/p datos y, sumando los log p niveles, queda a·log p + b·m(1 − 1/p) = O(a·log p + b·m): la latencia se paga log p veces y los datos una sola vez. Si pregunta por log p·(a + b·m/p), como en la diap. 38/41: ahí todos los mensajes se cuentan de m/p datos; en el árbol crecen en cada nivel, así que la suma exacta es la de la diap. 8/41. La eficiencia y la isoeficiencia no cambian, porque manda la mezcla del maestro.
-8) ¿Débil e isoeficiencia son lo mismo? No: en la débil (Gustafson) el trabajo por proceso es constante, que con un solo n significa n como raíz de p; ahí k p²/n crece como p a la 1,5 y E_w baja a 0,83 con p = 8 (E = 0,89); el modelo da E_w ≈ 1,06, así que la caída medida viene sobre todo del hardware compartido. La isoeficiencia es la n = f(p) que mantiene E constante: n = Theta(k p al cuadrado) y W = Theta(k al cuadrado por p a la cuarta).
-9) ¿Gather o reduce? El enunciado pide comm.gather; la reducción es la mejora: mismas predicciones y ahorro pequeño (33 % menos en los pasos 5 a 7 con 16n y p = 8, menos del 4 % en el total).
-10) ¿Por qué hasta p = 8 y no Khipu? Khipu no estuvo disponible (firewall) y el profesor autorizó medir en laptop; la M1 Pro tiene 8 núcleos de rendimiento, y con más entran núcleos lentos o sobre-suscripción.
-11) ¿Cómo contaron los FLOP? 3d por par: d restas, d productos, d-1 sumas y una raíz. FLOP/s = FLOP totales entre T_ej.</aside>
+  <aside>[Luis · 10 s] Eso es todo. Muchas gracias; quedamos atentos a sus preguntas.</aside>
 </section>
