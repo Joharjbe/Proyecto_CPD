@@ -1,0 +1,16 @@
+{
+ "615aa29fd627f67041747284998ad1d6": "codigo/resultados/figuras/png/F1_tiempos.png",
+ "d2d298d106da55ea19b927fa6aec34d8": "codigo/resultados/figuras/png/F3_popt.png",
+ "43c6ef2dab4039b4e72a215fa04a761a": "codigo/resultados/figuras/png/F4_speedup.png",
+ "e206e6b7f49151d32bda7cf9d90e855a": "codigo/resultados/figuras/png/F5_flops.png",
+ "7b7c608c683c693aa43f4a20cafd9506": "codigo/resultados/figuras/png/F7_escalabilidad.png",
+ "f62e1045acaafed5019164a7541c69a5": "codigo/resultados/figuras/png/F8_betas.png",
+ "4abf7f68892f0f0735134b3160703fcc": "codigo/resultados/figuras/png/F9_costo_por_par.png",
+ "ae4bfb45d0098a0419529ab4aca9f5d9": "codigo/resultados/figuras/png/F11_gather_vs_reduccion.png",
+ "30d174701c993f87561abb58113d376f": "presentacion_final/fuente/img/F0_foster.png",
+ "788c35a98edfd41148ca2fd6f1f231a5": "presentacion_final/fuente/img/digito_3.png",
+ "82963afb3a1e9cb9ee569aa0c8cb0d92": "presentacion_final/fuente/img/formula_pram.png",
+ "9bc3c69a532350b7ee8a6460c0c3f553": "presentacion_final/fuente/img/formula_normalizacion.png",
+ "348b9e626734540ff62cade68f8b1c04": "presentacion_final/fuente/img/formula_popt.png",
+ "ffc19c7c095e279065a1e0a503ad5cc4": "presentacion_final/fuente/img/formula_isoeficiencia.png"
+}

@@ -1,0 +1,29 @@
+<section id="metricas" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Métricas · un solo n</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Costo de cada paso y eficiencia</h2>
+  <table style="position:absolute; left:128px; top:300px; width:1000px; font-size:28px; color:#2A3547; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px">
+    <tr><th style="padding:14px 24px; text-align:left; font-size:24px; color:#525C6B">Paso del DAG</th><th style="padding:14px 24px; text-align:left; font-size:24px; color:#525C6B">Costo, con un solo n</th></tr>
+    <tr><td style="padding:12px 24px">1 · Broadcast de la prueba</td><td style="padding:12px 24px; color:#2563C9">O(log p · (a + n·b))</td></tr>
+    <tr><td style="padding:12px 24px">2 · Scatter del entrenamiento</td><td style="padding:12px 24px; color:#2563C9">O(a·log p + n·b)</td></tr>
+    <tr><td style="padding:12px 24px">3–4 · Distancias y orden</td><td style="padding:12px 24px; color:#C2452A">≈ O(n²/p)</td></tr>
+    <tr><td style="padding:12px 24px">5 · Gather de candidatos</td><td style="padding:12px 24px; color:#2563C9">O(a·log p + n·k·p·b)</td></tr>
+    <tr><td style="padding:12px 24px">6–7 · Mezcla y voto (maestro)</td><td style="padding:12px 24px; color:#C2452A">O(n·k·p)</td></tr>
+  </table>
+  <p data-build-in="fade 1" style="position:absolute; left:128px; top:672px; width:1000px; font-size:26px; color:#101C2E; background:#E9E5DC; border-radius:14px; padding:14px 24px">T_p(n, p) = O(n²/p + n·k·p + a·log p + b·n·(1 + log p + k·p))</p>
+  <p style="position:absolute; left:128px; top:760px; width:1000px; font-size:24px; line-height:1.35; color:#525C6B">a = latencia y b = tiempo por dato, como en el DAG. El DAG del enunciado usa a·p (topología&#160;lineal).</p>
+  <div data-build-in="left 2" style="position:absolute; left:1176px; top:300px; width:616px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:28px 32px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:28px; font-weight:600; color:#C2452A">Un solo n</p>
+    <p style="font-size:26px; line-height:1.4; color:#525C6B">n_tr = 0,8n y n_te = 0,2n: con el split 80/20 basta un n.</p>
+  </div>
+  <div data-build-in="left 3" style="position:absolute; left:1176px; top:494px; width:616px; background:#101C2E; border-radius:16px; padding:28px 32px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600; color:#F5F3EE">E = O(1/(1 + k·p²/n))</p>
+    <p style="font-size:26px; line-height:1.4; color:#C9D3E1">El overhead que manda es el del gather y la mezcla en el maestro.</p>
+  </div>
+  <div data-build-in="left 4" style="position:absolute; left:1176px; top:708px; width:616px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:28px 32px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:28px; font-weight:600; color:#2563C9">Scatter y gather en árbol</p>
+    <p style="font-size:26px; line-height:1.4; color:#525C6B">Latencia a·log p, como en MPI (U2.4); E y la isoeficiencia no cambian.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">07</p>
+  <aside>[Johar · 40 s] De la aglomeración sale el algoritmo del DAG, con p procesos, y esta es su tabla de costos, con un solo n porque el código base divide 80/20. Scatter y gather van con el costo de MPI, en árbol: la latencia se paga logaritmo de p veces y los datos una vez, como en la diapositiva 8 de la U2.4, la unidad a la que nos remitió el profesor por correo. Sumando, la eficiencia queda uno sobre uno más k p al cuadrado entre n: el overhead que manda es el del gather y la mezcla en el maestro. Ahora Leonardo, con el código y las mediciones.</aside>
+</section>

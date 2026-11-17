@@ -1,0 +1,44 @@
+<section id="cambios" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">De la parcial a la final</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Lo que pidió el profesor y dónde está</h2>
+  <div data-build-in="rise 1" style="position:absolute; left:128px; top:296px; width:1664px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 32px; display:flex; flex-direction:row; gap:32px; align-items:center">
+    <div style="width:640px; display:flex; flex-direction:column; gap:4px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#C2452A">Pidió</p>
+      <p style="font-size:28px; line-height:1.4; color:#2A3547">Un pseudocódigo que no dependa de p, para ver fácil el span.</p>
+    </div>
+    <p style="font-size:44px; color:#C2452A">→</p>
+    <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#2563C9">Lo resolvimos así</p>
+      <p style="font-size:28px; font-weight:600; line-height:1.4; color:#101C2E">PRAM con dos árboles explícitos: span O(log n).</p>
+    </div>
+    <p style="width:150px; text-align:right; font-size:24px; color:#525C6B">diap. 6</p>
+  </div>
+  <div data-build-in="rise 2" style="position:absolute; left:128px; top:470px; width:1664px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 32px; display:flex; flex-direction:row; gap:32px; align-items:center">
+    <div style="width:640px; display:flex; flex-direction:column; gap:4px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#C2452A">Pidió</p>
+      <p style="font-size:28px; line-height:1.4; color:#2A3547">Un análisis de Foster, además del DAG.</p>
+    </div>
+    <p style="font-size:44px; color:#C2452A">→</p>
+    <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#2563C9">Lo resolvimos así</p>
+      <p style="font-size:28px; font-weight:600; line-height:1.4; color:#101C2E">Cuatro pasos con canales; la aglomeración lleva del PRAM al DAG.</p>
+    </div>
+    <p style="width:150px; text-align:right; font-size:24px; color:#525C6B">diap. 5</p>
+  </div>
+  <div data-build-in="rise 3" style="position:absolute; left:128px; top:644px; width:1664px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 32px; display:flex; flex-direction:row; gap:32px; align-items:center">
+    <div style="width:640px; display:flex; flex-direction:column; gap:4px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#C2452A">Pidió</p>
+      <p style="font-size:28px; line-height:1.4; color:#2A3547">La ecuación de eficiencia con un solo n.</p>
+    </div>
+    <p style="font-size:44px; color:#C2452A">→</p>
+    <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#2563C9">Lo resolvimos así</p>
+      <p style="font-size:28px; font-weight:600; line-height:1.4; color:#101C2E">n_tr = 0,8n y n_te = 0,2n:<br>E = O(1/(1 + k·p²/n)) y n&#160;=&#160;Θ(k·p²).</p>
+    </div>
+    <p style="width:150px; text-align:right; font-size:24px; color:#525C6B">diap. 7 y 14</p>
+  </div>
+  <p data-build-in="fade 4" style="position:absolute; left:128px; top:828px; width:1664px; font-size:26px; color:#101C2E; background:#E9E5DC; border-radius:14px; padding:14px 24px">Además: medimos todo de nuevo en una sola sesión, usamos los costos O(log p) de MPI y agregamos la mejora con reduce.</p>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">03</p>
+  <aside>[Johar · 30 s] En la parcial el profesor nos pidió tres cosas. Un pseudocódigo sin p, para ver fácil el span: ahora el PRAM tiene los dos árboles escritos y el span es logaritmo de n. Un análisis de Foster además del DAG: están los cuatro pasos con sus canales. Y la eficiencia con un solo n: con el split 80/20 queda uno sobre uno más k p al cuadrado entre n. Además volvimos a medir todo en una sola sesión y agregamos la mejora con reduce.</aside>
+</section>

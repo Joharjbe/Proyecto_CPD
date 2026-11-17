@@ -1,0 +1,22 @@
+<section id="tiempos" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Resultados · inciso c</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Tiempos: ejecución, cómputo y comunicación</h2>
+  <div style="position:absolute; left:128px; top:300px; width:830px; height:620px; background:#FFFFFF; border-radius:16px; padding:10px">
+    <img src="/_blob/615aa29fd627f67041747284998ad1d6" alt="Tiempos de ejecución, cómputo y comunicación medidos y teóricos para los cuatro tamaños" style="width:810px; height:600px; object-fit:contain">
+  </div>
+  <div data-build-in="rise 1" style="position:absolute; left:1000px; top:320px; width:792px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:28px 32px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:28px; font-weight:600; color:#C2452A">El cómputo baja como 1/p</p>
+    <p style="font-size:26px; line-height:1.4; color:#525C6B">Cada proceso trabaja con 1/p del entrenamiento.</p>
+  </div>
+  <div data-build-in="rise 2" style="position:absolute; left:1000px; top:520px; width:792px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:28px 32px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:28px; font-weight:600; color:#2563C9">La comunicación crece poco con p</p>
+    <p style="font-size:26px; line-height:1.4; color:#525C6B">En 4n y 16n es de 27 a 2700 veces menor que el cómputo: compute bound.</p>
+  </div>
+  <div data-build-in="rise 3" style="position:absolute; left:1000px; top:720px; width:792px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:28px 32px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">Con n/4 y p = 8 se empatan</p>
+    <p style="font-size:26px; line-height:1.4; color:#525C6B">Comunicación ≈ cómputo, y el tiempo total vuelve a subir.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">Marcadores: mediana medida · líneas: modelo normalizado</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">10</p>
+  <aside>[Leonardo · 40 s] Esta figura responde el inciso c. Cada panel es un tamaño; los puntos son lo medido y las líneas el modelo. En negro el tiempo total, en rojo el cómputo y en azul la comunicación. El cómputo baja casi como uno entre p, porque cada proceso tiene su pedazo. La comunicación crece poco con p: en el tamaño del enunciado casi no cambia hasta 6 procesos, porque la domina el scatter, que siempre manda todo el entrenamiento. En los tamaños grandes es entre 27 y 2700 veces menor que el cómputo: el problema es compute bound. En el tamaño más chico, con 8 procesos la comunicación ya iguala al cómputo y el tiempo total vuelve a subir; ahí se ve el overhead.</aside>
+</section>

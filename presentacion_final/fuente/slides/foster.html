@@ -1,0 +1,26 @@
+<section id="foster" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Diseño · método de Foster</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">De medio millón de tareas a p bloques</h2>
+  <div style="position:absolute; left:128px; top:296px; width:1664px; height:360px; background:#FFFFFF; border-radius:16px; padding:12px">
+    <img src="/_blob/30d174701c993f87561abb58113d376f" alt="Los cuatro pasos de Foster: una grilla de tareas, la reducción por fila, los bloques de columnas y un bloque por proceso hacia la votación" style="width:1640px; height:336px; object-fit:contain">
+  </div>
+  <div data-build-in="rise 1" style="position:absolute; left:128px; top:680px; width:398px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:20px 24px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:26px; font-weight:600; color:#C2452A">01 · Particionamiento</p>
+    <p style="font-size:24px; line-height:1.35; color:#2A3547">Una tarea = una distancia: 517&#160;320 tareas de costo O(d).</p>
+  </div>
+  <div data-build-in="rise 2" style="position:absolute; left:550px; top:680px; width:398px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:20px 24px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:26px; font-weight:600; color:#C2452A">02 · Comunicación</p>
+    <p style="font-size:24px; line-height:1.35; color:#2A3547">Reducción por fila: del orden de n_tr·n_te canales. Es overhead.</p>
+  </div>
+  <div data-build-in="rise 3" style="position:absolute; left:972px; top:680px; width:398px; background:#FBFAF7; border:1px solid #C2452A; border-radius:16px; padding:20px 24px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:26px; font-weight:600; color:#C2452A">03 · Aglomeración</p>
+    <p style="font-size:24px; line-height:1.35; color:#2A3547">p bloques que devuelven k candidatos: unos 3p canales.</p>
+  </div>
+  <div data-build-in="rise 4" style="position:absolute; left:1394px; top:680px; width:398px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:20px 24px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:26px; font-weight:600; color:#C2452A">04 · Mapeo</p>
+    <p style="font-size:24px; line-height:1.35; color:#2A3547">Un bloque por proceso; difieren en a lo más una fila.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">05</p>
+  <aside>[Johar · 45 s] El diseño lo hicimos con los cuatro pasos de Foster, que el profesor pidió además del DAG. Particionamiento: la tarea más pequeña es una distancia entre una imagen de prueba y una de entrenamiento; son 517 320 tareas, cada una de costo orden d. Comunicación: cada distancia va a la selección de los k vecinos de su imagen de prueba, o sea, una reducción por fila; eso es overhead, porque en el secuencial no existe. Aglomeración, el paso clave: juntamos las columnas en p bloques de entrenamiento y cada bloque devuelve solo sus k mejores candidatos, así quedan unos 3p canales. Eso no cambia el resultado: si un punto es vecino global, también es vecino dentro de su bloque. Esta aglomeración es la que convierte el PRAM ideal, que viene ahora, en el algoritmo del DAG. Y mapeo: un bloque por proceso.</aside>
+</section>

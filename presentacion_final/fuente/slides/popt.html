@@ -1,0 +1,24 @@
+<section id="popt" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Resultados · inciso c</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Cantidad óptima de procesos</h2>
+  <div style="position:absolute; left:128px; top:300px; width:1130px; height:480px; background:#FFFFFF; border-radius:16px; padding:10px">
+    <img src="/_blob/d2d298d106da55ea19b927fa6aec34d8" alt="Modelo normalizado y sus términos frente a las mediciones, con el p óptimo para n = 1797 y n = 28752" style="width:1110px; height:460px; object-fit:contain">
+  </div>
+  <img data-build-in="fade 1" src="/_blob/348b9e626734540ff62cade68f8b1c04" alt="Derivada de T igual a cero da p óptimo aproximadamente raíz de A entre B, proporcional a la raíz de n_tr" style="position:absolute; left:128px; top:800px; width:900px; height:114px; object-fit:contain">
+  <div data-build-in="left 2" style="position:absolute; left:1290px; top:300px; width:502px; background:#101C2E; border-radius:16px; padding:28px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:2px; color:#FF9C7E">n = 1797 (enunciado)</p>
+    <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600; color:#F5F3EE">p óptimo ≈ 18</p>
+    <p style="font-size:24px; line-height:1.35; color:#C9D3E1">Aquí usamos 8, y de 6 a 8 solo ahorramos 0,1 ms.</p>
+  </div>
+  <div data-build-in="left 3" style="position:absolute; left:1290px; top:560px; width:502px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">n = 449: ≈ 7</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">Mínimo medido en p = 6.</p>
+  </div>
+  <div data-build-in="left 4" style="position:absolute; left:1290px; top:730px; width:502px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">4n y 16n: ≈ 40 y 85</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">Más de 8 núcleos: conviene usarlos&#160;todos.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">Zona gris: extrapolación del modelo (p &gt; 8)</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">12</p>
+  <aside>[Leonardo · 35 s] ¿Cuál es la cantidad óptima de procesos? Escribimos el modelo como A entre p, más B por p, más C por logaritmo de p, derivamos e igualamos a cero: p óptimo es aproximadamente la raíz de A entre B, que crece con la raíz del tamaño de entrenamiento. En la gráfica, las cruces son lo medido y la curva negra el modelo: el mínimo está cerca de 18 para el problema del enunciado. En nuestra máquina solo llegamos a 8, y de 6 a 8 ya solo ahorramos 0,1 milisegundos. Para los tamaños grandes el óptimo es de unos 40 y 85, así que ahí conviene usar todos los núcleos.</aside>
+</section>
