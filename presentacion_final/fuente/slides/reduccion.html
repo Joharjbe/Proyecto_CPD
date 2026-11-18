@@ -1,0 +1,24 @@
+<section id="reduccion" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Mejora · beta 3b</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Gather frente a reducción en árbol</h2>
+  <div style="position:absolute; left:128px; top:300px; width:1130px; height:480px; background:#FFFFFF; border-radius:16px; padding:10px">
+    <img src="/_blob/ae4bfb45d0098a0419529ab4aca9f5d9" alt="Tiempo de ejecución y de los pasos 5 a 7 de la beta 3 con gather y de la beta 3b con reduce, para n0 y 16n" style="width:1110px; height:460px; object-fit:contain">
+  </div>
+  <p data-build-in="fade 4" style="position:absolute; left:128px; top:800px; width:1130px; font-size:24px; line-height:1.35; color:#101C2E; background:#E9E5DC; border-radius:14px; padding:14px 24px">Teoría: la mezcla pasa de n·k·p a n·k·log p, y la isoeficiencia de Θ(k·p²) a Θ(k·p·log p).</p>
+  <div data-build-in="left 1" style="position:absolute; left:1290px; top:300px; width:502px; background:#101C2E; border-radius:16px; padding:28px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:2px; color:#FF9C7E">Con comm.reduce</p>
+    <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600; color:#F5F3EE">−33 %</p>
+    <p style="font-size:24px; line-height:1.35; color:#C9D3E1">en los pasos 5&#160;a&#160;7 con 16n y p&#160;=&#160;8 (6,9&#160;→&#160;4,6&#160;ms).</p>
+  </div>
+  <div data-build-in="left 2" style="position:absolute; left:1290px; top:540px; width:502px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">Mismas predicciones</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">15 de 15 casos, igual que la beta 3.</p>
+  </div>
+  <div data-build-in="left 3" style="position:absolute; left:1290px; top:690px; width:502px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">Tiempo total: ±4 %</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">En n0, 4n y 16n (n/4: hasta +9 %). El ahorro es pequeño.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">15</p>
+  <aside>[Luis · 40 s] Como mejora implementamos una reducción en árbol: en vez de que el maestro reciba todos los candidatos y los mezcle solo, comm.reduce los mezcla de dos en dos y cada nivel conserva los k mejores. En teoría la mezcla pasa de n k p a n k logaritmo de p, y la isoeficiencia baja a n como k p logaritmo de p. Da las mismas predicciones. En la práctica, con 8 procesos los pasos 5 a 7 bajan un tercio en el tamaño más grande, pero ahí pesan menos del 1 por ciento, así que el tiempo total cambia menos del 4 por ciento, del orden del ruido; en el tamaño chico la reducción hasta es algo más lenta. Como nos dijo el profesor, el ahorro es pequeño: con 8 procesos el gather todavía no es el cuello de botella.</aside>
+</section>

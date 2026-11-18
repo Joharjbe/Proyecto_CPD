@@ -1,0 +1,25 @@
+<section id="experimento" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Diseño experimental</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Cómo medimos</h2>
+  <div style="flex:1; display:flex; flex-direction:row; gap:32px">
+    <div style="flex:1; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:18px; padding:36px; display:flex; flex-direction:column; gap:14px">
+      <p style="align-self:flex-start; font-size:24px; font-weight:600; color:#F5F3EE; background:#101C2E; border-radius:999px; padding:6px 18px">Máquina</p>
+      <p style="font-size:28px; line-height:1.45; color:#2A3547">Apple M1 Pro: 8 núcleos de rendimiento y 2 de eficiencia.</p>
+      <p style="font-size:28px; line-height:1.45; color:#2A3547">p = 1, 2, 4, 6 y 8: hasta un proceso por núcleo, con un hilo cada uno.</p>
+    </div>
+    <div style="flex:1; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:18px; padding:36px; display:flex; flex-direction:column; gap:14px">
+      <p style="align-self:flex-start; font-size:24px; font-weight:600; color:#F5F3EE; background:#2563C9; border-radius:999px; padding:6px 18px">Tamaños</p>
+      <p style="font-size:28px; line-height:1.45; color:#2A3547">n/4 = 449 · n0 = 1797 · 4n = 7188 · 16n = 28&#160;752.</p>
+      <p style="font-size:28px; line-height:1.45; color:#2A3547">Réplicas con ruido hechas después del split: sin mezclar entrenamiento y prueba.</p>
+    </div>
+    <div style="flex:1; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:18px; padding:36px; display:flex; flex-direction:column; gap:14px">
+      <p style="align-self:flex-start; font-size:24px; font-weight:600; color:#F5F3EE; background:#C2452A; border-radius:999px; padding:6px 18px">Medición</p>
+      <p style="font-size:28px; line-height:1.45; color:#2A3547">MPI.Wtime en el maestro; un mpirun por repetición, 4 intercaladas y la mediana.</p>
+      <p style="font-size:28px; line-height:1.45; color:#2A3547">Modo&#160;A sin barreras para T_ej; modo&#160;B con barreras para separar las&#160;fases.</p>
+    </div>
+  </div>
+  <p style="font-size:28px; color:#101C2E; background:#E9E5DC; border-radius:14px; padding:18px 28px"><b>T_s</b> = la beta 3 en un solo proceso y sin comunicación: así S compara el mismo cálculo repartido entre p procesos.</p>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">09</p>
+  <aside>[Leonardo · 35 s] Así medimos. Khipu no estaba disponible por un problema de firewall y el profesor nos autorizó a medir en una laptop: una M1 Pro con 8 núcleos de rendimiento, así que usamos hasta 8 procesos, con un hilo cada uno. Para crecer n replicamos las imágenes con ruido, después del split. Cada mpirun mide una repetición; hicimos cuatro intercaladas en el tiempo (dos en el tamaño mayor) y tomamos la mediana, todo en una sesión de 33 minutos. El modo A, sin barreras, da el tiempo total; el B separa las fases con barreras, que con 8 procesos alargan la corrida un 14 a 17 % en los tamaños chicos. T_s es la beta 3 en un proceso.</aside>
+</section>

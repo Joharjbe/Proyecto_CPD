@@ -1,0 +1,27 @@
+<section id="escalabilidad" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Resultados · inciso e</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Escalabilidad</h2>
+  <div style="position:absolute; left:128px; top:292px; width:600px; display:flex; flex-direction:column; gap:2px">
+    <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:32px; font-weight:600; color:#101C2E">E = O(1/(1 + k·p²/n))</p>
+    <p style="font-size:24px; color:#525C6B">un solo n: n_tr = 0,8n y n_te = 0,2n</p>
+  </div>
+  <img data-build-in="fade 1" src="/_blob/ffc19c7c095e279065a1e0a503ad5cc4" alt="W igual a K por T0 implica n del orden de k p al cuadrado, e implica W del orden de k al cuadrado por p a la cuarta" style="position:absolute; left:760px; top:300px; width:1032px; height:72px; object-fit:contain">
+  <div style="position:absolute; left:128px; top:400px; width:1200px; height:510px; background:#FFFFFF; border-radius:16px; padding:10px">
+    <img src="/_blob/7b7c608c683c693aa43f4a20cafd9506" alt="Tiempo de las series débil e isoeficiencia, y eficiencia de los tres experimentos: fuerte con n0 fijo, débil con n proporcional a raíz de p e isoeficiencia con n proporcional a p al cuadrado" style="width:1180px; height:490px; object-fit:contain">
+  </div>
+  <div data-build-in="left 2" style="position:absolute; left:1360px; top:400px; width:432px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:22px 26px; display:flex; flex-direction:column; gap:4px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">Fuerte: no escala</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">n0 fijo: E cae de 1,17 a 0,90 entre p = 6 y 8.</p>
+  </div>
+  <div data-build-in="left 3" style="position:absolute; left:1360px; top:560px; width:432px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:22px 26px; display:flex; flex-direction:column; gap:4px">
+    <p style="font-size:28px; font-weight:600; color:#D95F02">Débil: n ~ √p</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">Trabajo por proceso fijo: E_w = 1,08 con p = 4 y 0,83 con p = 8.</p>
+  </div>
+  <div data-build-in="left 4" style="position:absolute; left:1360px; top:760px; width:432px; background:#101C2E; border-radius:16px; padding:22px 26px; display:flex; flex-direction:column; gap:4px">
+    <p style="font-size:28px; font-weight:600; color:#F5F3EE">Iso: n ~ k·p²</p>
+    <p style="font-size:24px; line-height:1.35; color:#C9D3E1">E plana: 0,99 · 1,11 · 1,13 · 1,13. Hasta 115&#160;008 imágenes.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">14</p>
+  <aside>[Luis · 50 s] Para la escalabilidad usamos la función de overhead del curso, T0 igual a p por T_p menos W. Con un solo n, la eficiencia es uno sobre uno más k p al cuadrado entre n, y para mantenerla, W igual a K por T0 pide que n crezca como k p al cuadrado. Hicimos tres experimentos. Con n fijo no escala: en el tamaño del enunciado la eficiencia cae a 0,90 con 8 procesos. En la débil, con n como raíz de p, la eficiencia débil se mantiene hasta 4 procesos y baja a 0,83 con 8, sobre todo porque con 8 procesos todos los núcleos de rendimiento están ocupados; el término k p al cuadrado entre n crece como p a la 1,5, pero con 8 procesos todavía es chico. Con la ley de isoeficiencia llegamos a 115 mil imágenes con la eficiencia plana, entre 0,99 y 1,13.</aside>
+</section>

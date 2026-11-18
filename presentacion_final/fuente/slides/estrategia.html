@@ -1,0 +1,29 @@
+<section id="estrategia" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <!-- root 780,320,360,120 | w0 270,575,300,130 | w1 650,575,300,130 | w2 1350,575,300,130 | maj 760,818,400,100 -->
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">La solución · según el DAG del enunciado</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Cómo se reparte el trabajo</h2>
+  <x-shape kind="ellipse" data-build-in="fade 1" style="position:absolute; left:780px; top:320px; width:360px; height:120px; background:#101C2E"></x-shape>
+  <p data-build-in="fade 1" style="position:absolute; left:800px; top:348px; width:320px; font-size:26px; font-weight:600; line-height:1.2; text-align:center; color:#F5F3EE">Datos iniciales<br>(proceso 0)</p>
+  <x-connector data-build-in="fade 2" x1="900" y1="437" x2="420" y2="575" style="color:#2563C9; border-width:3px"></x-connector>
+  <x-connector data-build-in="fade 2" x1="960" y1="440" x2="800" y2="575" style="color:#2563C9; border-width:3px"></x-connector>
+  <x-connector data-build-in="fade 2" x1="1020" y1="437" x2="1500" y2="575" style="color:#2563C9; border-width:3px"></x-connector>
+  <p data-build-in="fade 2" style="position:absolute; left:128px; top:440px; width:430px; font-size:24px; line-height:1.4; color:#2563C9"><b>Scatter:</b> 1437/p imágenes de entrenamiento a cada proceso</p>
+  <p data-build-in="fade 2" style="position:absolute; left:1330px; top:440px; width:460px; font-size:24px; line-height:1.4; color:#2563C9"><b>Broadcast:</b> las 360 imágenes de prueba&#160;a&#160;todos</p>
+  <x-shape kind="ellipse" data-build-in="rise 3" style="position:absolute; left:270px; top:575px; width:300px; height:130px; background:#FBFAF7; border:3px solid #C2452A"></x-shape>
+  <x-shape kind="ellipse" data-build-in="rise 3" style="position:absolute; left:650px; top:575px; width:300px; height:130px; background:#FBFAF7; border:3px solid #C2452A"></x-shape>
+  <x-shape kind="ellipse" data-build-in="rise 3" style="position:absolute; left:1350px; top:575px; width:300px; height:130px; background:#FBFAF7; border:3px solid #C2452A"></x-shape>
+  <p data-build-in="rise 3" style="position:absolute; left:290px; top:610px; width:260px; font-size:26px; line-height:1.15; text-align:center; color:#101C2E"><b>Proceso 0</b><br>dist · sort · k</p>
+  <p data-build-in="rise 3" style="position:absolute; left:670px; top:610px; width:260px; font-size:26px; line-height:1.15; text-align:center; color:#101C2E"><b>Proceso 1</b><br>dist · sort · k</p>
+  <p data-build-in="rise 3" style="position:absolute; left:1060px; top:612px; width:200px; font-size:44px; font-weight:700; text-align:center; color:#101C2E">· · ·</p>
+  <p data-build-in="rise 3" style="position:absolute; left:1370px; top:610px; width:260px; font-size:26px; line-height:1.15; text-align:center; color:#101C2E"><b>Proceso p − 1</b><br>dist · sort · k</p>
+  <p data-build-in="fade 4" style="position:absolute; left:128px; top:722px; width:270px; font-size:24px; line-height:1.4; color:#C2452A"><b>Cómputo en paralelo</b> en cada proceso</p>
+  <x-connector data-build-in="fade 5" x1="420" y1="705" x2="880" y2="822" style="color:#2563C9; border-width:3px"></x-connector>
+  <x-connector data-build-in="fade 5" x1="800" y1="705" x2="960" y2="818" style="color:#2563C9; border-width:3px"></x-connector>
+  <x-connector data-build-in="fade 5" x1="1500" y1="705" x2="1040" y2="822" style="color:#2563C9; border-width:3px"></x-connector>
+  <p data-build-in="fade 5" style="position:absolute; left:1330px; top:762px; width:460px; font-size:24px; line-height:1.4; color:#2563C9"><b>Gather:</b> k candidatos por cada imagen&#160;de&#160;prueba</p>
+  <x-shape kind="ellipse" data-build-in="rise 6" style="position:absolute; left:760px; top:818px; width:400px; height:100px; background:#101C2E"></x-shape>
+  <p data-build-in="rise 6" style="position:absolute; left:780px; top:850px; width:360px; font-size:28px; font-weight:600; text-align:center; color:#F5F3EE">Votación por mayoría</p>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">04</p>
+  <aside>[Johar · 40 s] Seguimos el DAG del enunciado; los colores son los mismos: azul es comunicación y rojo es cómputo. Arriba está el proceso 0, el maestro, que tiene todos los datos. Primero hace dos envíos: un scatter, que reparte las imágenes de entrenamiento en bloques de 1437 entre p, y un broadcast, que manda las 360 de prueba a todos. Después cada proceso trabaja solo: calcula las distancias contra su bloque, las ordena y guarda sus k vecinos. Al final un gather junta en el maestro los k candidatos de cada proceso, y el maestro hace la votación por mayoría.</aside>
+</section>

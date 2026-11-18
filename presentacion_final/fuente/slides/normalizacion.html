@@ -1,0 +1,20 @@
+<section id="normalizacion" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Resultados · inciso c</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Teoría normalizada frente a lo medido</h2>
+  <img data-build-in="fade 1" src="/_blob/9bc3c69a532350b7ee8a6460c0c3f553" alt="Modelo teórico normalizado: cómputo con constantes c_d, c_s y c_2, y comunicación con a y b para bcast, scatter y gather, con latencias que crecen con log2 de p" style="position:absolute; left:128px; top:300px; width:1600px; height:99px; object-fit:contain">
+  <p data-build-in="fade 1" style="position:absolute; left:128px; top:410px; width:1600px; font-size:26px; color:#525C6B">Cada término lleva una constante física, ajustada con su propia fase (modo B); scatter y gather con latencia log p.</p>
+  <div style="position:absolute; left:128px; top:480px; width:560px; height:440px; background:#FFFFFF; border-radius:16px; padding:10px">
+    <img src="/_blob/4abf7f68892f0f0735134b3160703fcc" alt="Costo por par del cómputo local en función de log2 de n_tr entre p" style="width:540px; height:420px; object-fit:contain">
+  </div>
+  <div data-build-in="rise 2" style="position:absolute; left:730px; top:490px; width:1062px; background:#101C2E; border-radius:16px; padding:30px 36px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600; color:#F5F3EE">R² = 0,998 · error medio 8 %</p>
+    <p style="font-size:26px; line-height:1.4; color:#C9D3E1">El ajuste usa solo las fases; un ping-pong confirma el costo por dato (≈ 2 ns).</p>
+  </div>
+  <div data-build-in="rise 3" style="position:absolute; left:730px; top:700px; width:1062px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:28px 36px; display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:28px; font-weight:600; color:#C2452A">Lo que no esperábamos: ordenar pesa más que calcular distancias</p>
+    <p style="font-size:26px; line-height:1.4; color:#525C6B">Ordenar cuesta ≈ 46 ns por par y la distancia ≈ 5 ns: el costo por par crece&#160;con&#160;log₂(n_tr/p).</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">11</p>
+  <aside>[Leonardo · 40 s] El inciso c pide normalizar la expresión teórica. A cada término del T_p le pusimos una constante física, ajustada con su propia fase medida con barreras; scatter y gather van con latencia logaritmo de p, como en el árbol de la U2.4. El modelo reproduce los tiempos con R cuadrado de 0,998 y error medio de 8 por ciento, y un ping-pong confirma el costo por dato: unos 2 nanosegundos con pickle, lo mismo que dan los costos por dato del ajuste. Lo que no esperábamos: ordenar cuesta unos 46 nanosegundos por par y la distancia solo 5, porque sale de un producto de matrices; por eso el costo por par crece con el logaritmo del bloque.</aside>
+</section>

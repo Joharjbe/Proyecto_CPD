@@ -1,0 +1,23 @@
+<section id="betas" data-transition="fade" style="background:#F5F3EE; color:#101C2E; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#C2452A">Desarrollo del código · inciso b</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#101C2E">Tres versiones beta</h2>
+  <div data-build-in="left 1" style="position:absolute; left:128px; top:310px; width:560px; height:170px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">Beta 1 · 1034 ms</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">Traduce el algoritmo del DAG con el bucle de Python del código base.</p>
+  </div>
+  <div data-build-in="left 2" style="position:absolute; left:128px; top:500px; width:560px; height:170px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:28px; font-weight:600; color:#101C2E">Beta 2 · 54 ms</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">Distancias con NumPy; con ella empezamos a medir por fases.</p>
+  </div>
+  <div data-build-in="left 3" style="position:absolute; left:128px; top:690px; width:560px; height:170px; background:#FBFAF7; border:1px solid #E2DDD3; border-radius:16px; padding:24px 30px; display:flex; flex-direction:column; gap:6px">
+    <p style="font-size:28px; font-weight:600; color:#C2452A">Beta 3 · 27 ms (final)</p>
+    <p style="font-size:24px; line-height:1.35; color:#525C6B">Producto de matrices por bloques y tamaño variable del problema.</p>
+  </div>
+  <div style="position:absolute; left:728px; top:330px; width:1064px; height:460px; background:#FFFFFF; border-radius:16px; padding:12px">
+    <img src="/_blob/f62e1045acaafed5019164a7541c69a5" alt="Tiempo de ejecución y speedup relativo de las tres versiones beta con n = 1797" style="width:1040px; height:436px; object-fit:contain">
+  </div>
+  <p data-build-in="fade 4" style="position:absolute; left:728px; top:815px; width:1064px; font-size:24px; font-weight:600; text-align:center; color:#101C2E; background:#E9E5DC; border-radius:999px; padding:10px 20px">Validación: 49 de 49 casos iguales al código base o al secuencial</p>
+  <p style="position:absolute; left:128px; bottom:64px; width:900px; font-size:24px; color:#525C6B">KNN en paralelo · Grupo 7 · tiempos con p = 1 y n = 1797</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:120px; text-align:right; font-size:24px; color:#525C6B">08</p>
+  <aside>[Leonardo · 40 s] El código lo hicimos en tres versiones, con las mismas colectivas; lo que cambia es el cálculo local. La beta 1 traduce tal cual el algoritmo del DAG, con el bucle de Python del código base: un segundo con un proceso. La beta 2 calcula las distancias con NumPy, y con ella empezamos a medir por fases: 54 milisegundos. La beta 3 usa un producto de matrices por bloques y permite agrandar el problema: 27 milisegundos, 38 veces más rápida que el código base. Como lo escribimos con ayuda de IA, lo validamos: las tres, y también la mejora con reduce, dan las mismas predicciones que el código del profesor con 1 a 8 procesos.</aside>
+</section>
